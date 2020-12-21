@@ -4,7 +4,7 @@
       <v-col cols="12" sm="8">
         <h1 class="mb-3">Livraison</h1>
         <v-divider class="mb-12"></v-divider>
-        <v-row class="mb-n2">
+        <v-row>
           <v-col cols="12" sm="6">
             <v-text-field label="Prenom" outlined></v-text-field>
           </v-col>
@@ -28,15 +28,15 @@
         ></v-autocomplete>
         <v-text-field label="phone 1" outlined></v-text-field>
         <v-text-field label="phone 2" outlined></v-text-field>
-        <v-btn x-large color="#F25021" dark>
+        <v-btn x-large color="#F25021" dark @click="checkout()">
           <div class="pa-7">
             <v-icon class="mr-2">mdi-cart</v-icon> Commander
           </div>
         </v-btn>
       </v-col>
 
-      <v-col cols="12" sm="4">
-        <v-card elevation="5" class="py-1">
+      <v-col cols="12" sm="4" order="first" order-sm="last">
+        <v-card outlined class="pa-1">
           <v-row class="my-2" no-gutters>
             <v-col> <v-spacer></v-spacer> </v-col>
             <h4 class="font-weight-light">Order Summery</h4>
@@ -93,6 +93,22 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-dialog v-model="dialog" max-width="290">
+      <v-card width="500px">
+        <v-card-text>
+          <v-container style="text-align: center" class=""
+            ><div class="circle-loader" :class="{ 'load-complete': done }">
+              <div
+                class="checkmark draw"
+                :style="{ display: done ? 'block' : 'none' }"
+              ></div>
+            </div>
+            <h2 class="main-black">تم الموافقة على طلبكم</h2>
+            <h5 class="secondary-black">سيتم الاتصال بكم قريبا</h5></v-container
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -100,6 +116,32 @@
 export default {
   name: "HelloWorld",
 
-  data: () => ({}),
+  data: () => ({ dialog: false, done: false }),
+  methods: {
+    checkout() {
+      this.dialog = true;
+      setTimeout(() => {
+        this.done = true;
+      }, 1500);
+    },
+  },
 };
 </script>
+<style  scoped>
+.main-black {
+  position: relative;
+  max-width: 100%;
+  margin: 0 0 0.4em;
+  padding: 0;
+  color: #595959;
+  font-size: 1.875em;
+  font-weight: 600;
+  text-align: center;
+  text-transform: none;
+  word-wrap: break-word;
+}
+.secondary-black {
+  color: #545454;
+  font-size: 1.125em;
+}
+</style>
