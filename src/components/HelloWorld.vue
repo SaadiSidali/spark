@@ -6,15 +6,27 @@
         <v-divider class="mb-12"></v-divider>
         <v-row>
           <v-col cols="12" sm="6">
-            <v-text-field label="Prenom" outlined></v-text-field>
+            <v-text-field
+              error-messages="ass"
+              label="Prenom"
+              outlined
+            ></v-text-field>
           </v-col>
           <v-col cols="12" sm="6">
-            <v-text-field label="Nom" outlined></v-text-field>
+            <v-text-field
+              success
+              success-messages="yay"
+              :aria-autocomplete="false"
+              label="Nom"
+              outlined
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-text-field label="Adress" outlined></v-text-field>
 
         <v-autocomplete
+          :loading="true"
+          disabled
           v-model="value"
           :items="['alger', 'batna']"
           outlined
@@ -26,8 +38,12 @@
           outlined
           label="City"
         ></v-autocomplete>
-        <v-text-field label="phone 1" outlined></v-text-field>
-        <v-text-field label="phone 2" outlined></v-text-field>
+        <v-text-field label="Phone 1" outlined></v-text-field>
+        <v-text-field
+          label="Phone 2"
+          hint="deuxième Téléphone/ رقم الهاتف الثاني, إذا لم نتمكن من الوصول إليك باستخدام رقم هاتفك الأول"
+          outlined
+        ></v-text-field>
         <v-btn x-large color="#F25021" dark @click="checkout()">
           <div class="pa-7">
             <v-icon class="mr-2">mdi-cart</v-icon> Commander
@@ -93,8 +109,8 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="dialog" max-width="290">
-      <v-card width="500px">
+    <v-dialog v-model="dialog" max-width="70%">
+      <v-card height="50%" class="py-12">
         <v-card-text>
           <v-container style="text-align: center" class=""
             ><div class="circle-loader" :class="{ 'load-complete': done }">
@@ -106,6 +122,46 @@
             <h2 class="main-black">تم الموافقة على طلبكم</h2>
             <h5 class="secondary-black">سيتم الاتصال بكم قريبا</h5></v-container
           >
+          <svg
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 130.2 130.2"
+          >
+            <circle
+              class="path circle"
+              fill="none"
+              stroke="#D06079"
+              stroke-width="2"
+              stroke-miterlimit="10"
+              cx="65.1"
+              cy="65.1"
+              r="62.1"
+            />
+            <line
+              class="path line"
+              fill="none"
+              stroke="#D06079"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-miterlimit="10"
+              x1="34.4"
+              y1="37.9"
+              x2="95.8"
+              y2="92.3"
+            />
+            <line
+              class="path line"
+              fill="none"
+              stroke="#D06079"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-miterlimit="10"
+              x1="95.8"
+              y1="38"
+              x2="34.4"
+              y2="92.2"
+            />
+          </svg>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -128,6 +184,73 @@ export default {
 };
 </script>
 <style  scoped>
+svg {
+  width: 100px;
+  display: block;
+  margin: 40px auto 0;
+}
+.path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+}
+.path.circle {
+  -webkit-animation: dash 0.9s ease-in-out;
+  animation: dash 0.9s ease-in-out;
+}
+.path.line {
+  stroke-dashoffset: 1000;
+  -webkit-animation: dash 0.9s 0.35s ease-in-out forwards;
+  animation: dash 0.9s 0.35s ease-in-out forwards;
+}
+.path.check {
+  stroke-dashoffset: -100;
+  -webkit-animation: dash-check 0.9s 0.35s ease-in-out forwards;
+  animation: dash-check 0.9s 0.35s ease-in-out forwards;
+}
+p {
+  text-align: center;
+  margin: 20px 0 60px;
+  font-size: 1.25em;
+}
+p.success {
+  color: #73af55;
+}
+p.error {
+  color: #d06079;
+}
+@-webkit-keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@-webkit-keyframes dash-check {
+  0% {
+    stroke-dashoffset: -100;
+  }
+  100% {
+    stroke-dashoffset: 900;
+  }
+}
+@keyframes dash-check {
+  0% {
+    stroke-dashoffset: -100;
+  }
+  100% {
+    stroke-dashoffset: 900;
+  }
+}
+
 .main-black {
   position: relative;
   max-width: 100%;
