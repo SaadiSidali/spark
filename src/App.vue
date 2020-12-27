@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="white" dense elevation="1">
+    <v-app-bar app dark dense elevation="1">
       <v-spacer> </v-spacer>
       <!-- <img
         class="mt-7"
@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import HelloWorld from './components/HelloWorld';
 
 export default {
-  name: "App",
+  name: 'App',
 
   components: {
     HelloWorld,
@@ -36,9 +36,9 @@ export default {
 
 <style lang="scss">
 * {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 .spark-color {
@@ -91,7 +91,7 @@ $check-color: $brand-success;
     transform-origin: left top;
     border-right: $check-thickness solid $check-color;
     border-top: $check-thickness solid $check-color;
-    content: "";
+    content: '';
     left: $check-left;
     top: $check-height;
     position: absolute;
