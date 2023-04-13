@@ -69,7 +69,7 @@
             hint="deuxième Téléphone/ رقم الهاتف الثاني, إذا لم نتمكن من الوصول إليك باستخدام رقم هاتفك الأول"
             outlined
           ></v-text-field>
-          <v-btn dark x-large @click="checkout()">
+          <v-btn dark color="#f25021" x-large @click="checkout()">
             <div class="px-7">
               <svg
                 style="width: 24px; height: 24px"
@@ -98,7 +98,7 @@
             <v-col>
               <v-list-item two-line>
                 <v-list-item-avatar tile left>
-                  <v-img :src="product.imageUrl"></v-img>
+                  <v-img lazy-src="logo.png" :src="product.imageUrl"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title>{{ product.title }} </v-list-item-title>
@@ -172,19 +172,27 @@
                 :style="{ display: done ? 'block' : 'none' }"
               ></div>
             </div>
-            <h2 class="main-black">تم الموافقة على طلبكم</h2>
-            <h5 class="secondary-black">سيتم الاتصال بكم قريبا</h5>
+            <h2 class="main-black">
+              {{ !loading ? 'تم الموافقة على طلبكم' : 'Traitement...' }}
+            </h2>
+            <h5 class="secondary-black">
+              {{ !loading ? 'سيتم الاتصال بكم قريبا' : '' }}
+            </h5>
           </v-container> </v-card-text
         ><v-card-text v-else>
           <v-container style="text-align: center" class="">
             <cross />
-            <h2 class="main-black">يرجى التحقق من المعلومات</h2>
+            <h2 class="main-black">
+              {{ done ? 'Please try again!' : 'يرجى التحقق من المعلومات' }}
+            </h2>
             <h5 class="secondary-black mb-12">{{ errorMessage }}</h5>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn large color="primary" @click="dialog = false">Close</v-btn>
+          <v-btn v-if="!loading" large color="primary" @click="dialog = false"
+            >Close</v-btn
+          >
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -312,30 +320,18 @@ export default {
     },
   },
   async mounted() {
-    this.productId = this.findGetParameter('id');
-
-    await fetch('/result.json')
-      .then((res) => res.json())
-      .then(({ wilayas }) => {
-        this.wilayas = wilayas;
-        console.log(wilayas);
-      });
-
-    const res = await fetch(this.url + '/products?productId=' + this.productId);
-    const product = await res.json();
-    this.product = product.data[0];
+    await this.getProduct();
   },
   data: () => ({
     cost: 400,
     product: {
       title: '',
       price: 0,
-      imageUrl: '',
+      imageUrl: '/logo.png',
     },
     order: {
       adress: '',
       wilaya: '',
-      daira: '',
       wilayaCode: '',
       lastName: '',
       firstName: '',
@@ -343,12 +339,11 @@ export default {
       num2: '',
       city: '',
     },
-    url: 'http://192.168.43.131:3030',
+    url: 'http://localhost:3030',
     productId: undefined,
     qty: 1,
     wilayas: [],
-
-    isSent: false,
+    loading: false,
     dairas: [],
     dialog: false,
     done: false,
@@ -367,6 +362,21 @@ export default {
     ],
   }),
   methods: {
+    async getProduct() {
+      this.productId = this.findGetParameter('id');
+
+      await fetch('/result.json')
+        .then((res) => res.json())
+        .then(({ wilayas }) => {
+          this.wilayas = wilayas;
+        });
+
+      const res = await fetch(
+        this.url + '/products?productId=' + this.productId
+      );
+      const product = await res.json();
+      this.product = product.data[0];
+    },
     findGetParameter(parameterName) {
       var result = null,
         tmp = [];
@@ -395,8 +405,14 @@ export default {
     validate() {
       this.$refs.form.validate();
     },
-    checkout() {
+    async checkout() {
+      //TODO: model not working
       this.hasError = false;
+      if (this.done) {
+        this.hasError = true;
+        this.dialog = true;
+        return;
+      }
       this.validate();
       const children = this.$refs.form.$children;
       // if (this.isSent) {
@@ -405,11 +421,53 @@ export default {
         if (child.errorBucket && child.errorBucket.length > 0) {
           this.errorMessage = child.label + ' - ' + child.hint;
           this.hasError = true;
-          this.dialog = true;
 
+          this.dialog = true;
           return;
         }
       }
+      this.dialog = true;
+      this.loading = true;
+      await this.getProduct();
+
+      const data = {
+        adress: this.order.adress,
+        city: this.order.city,
+        wilaya: this.order.wilaya,
+        wilayaCode: this.order.wilayaCode,
+        site: true,
+        lastName: this.order.lastName,
+        firstName: this.order.firstName,
+        num1: this.order.num1,
+        num2: this.order.num2,
+        products: [
+          {
+            productId: this.product._id,
+            quantity: this.qty,
+          },
+        ],
+      };
+
+      const options = {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const res = await fetch(this.url + '/orders', options);
+      if (res.status === 201) {
+        this.done = true;
+        /*eslint no-undef: 0*/
+        window.fbq('track', 'Purchase', {
+          currency: 'DZD',
+          value: res.total,
+        });
+      }
+
+      this.loading = false;
+
       // this.$refs.form.$children.forEach((child) => {
       //   if (child.errorBucket && child.errorBucket.length > 0) {
       //     this.errorMessage = child.label + ' - ' + child.hint;
@@ -418,12 +476,6 @@ export default {
       //   }
       // });
       // }
-      this.someBOOL = !this.someBOOL;
-
-      this.dialog = true;
-      setTimeout(() => {
-        this.done = true;
-      }, 1500);
     },
   },
 };
