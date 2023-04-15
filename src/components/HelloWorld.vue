@@ -1,4 +1,4 @@
-<template >
+<template>
   <v-container>
     <v-row>
       <v-col cols="12" sm="8">
@@ -142,7 +142,7 @@
             <v-list-item-content
               ><h4 class="font-weight-regular">
                 Frais de la livraison
-                {{ `${order.wilaya ? `Pour ${order.wilaya}` : ''}` }}
+                {{ `${order.wilaya ? `Pour ${order.wilaya}` : ""}` }}
               </h4></v-list-item-content
             >
             <v-list-item-action-text
@@ -173,17 +173,17 @@
               ></div>
             </div>
             <h2 class="main-black">
-              {{ !loading ? 'تم الموافقة على طلبكم' : 'Traitement...' }}
+              {{ !loading ? "تم الموافقة على طلبكم" : "Traitement..." }}
             </h2>
             <h5 class="secondary-black">
-              {{ !loading ? 'سيتم الاتصال بكم قريبا' : '' }}
+              {{ !loading ? "سيتم الاتصال بكم قريبا" : "" }}
             </h5>
           </v-container> </v-card-text
         ><v-card-text v-else>
           <v-container style="text-align: center" class="">
             <cross />
             <h2 class="main-black">
-              {{ done ? 'Please try again!' : 'يرجى التحقق من المعلومات' }}
+              {{ done ? "Please try again!" : "يرجى التحقق من المعلومات" }}
             </h2>
             <h5 class="secondary-black mb-12">{{ errorMessage }}</h5>
           </v-container>
@@ -275,10 +275,10 @@
 </template>
 
 <script>
-import cross from './Cross.vue';
+import cross from "./Cross.vue";
 export default {
   components: { cross },
-  name: 'HelloWorld',
+  name: "HelloWorld",
   computed: {
     subTotal() {
       return this.qty * this.product.price;
@@ -289,7 +289,7 @@ export default {
     wilayaList() {
       return this.wilayas
         .map((w) => {
-          return { text: w.id + ' - ' + w.name, value: w.id };
+          return { text: w.id + " - " + w.name, value: w.id };
         })
         .sort((a, b) => a.id - b.id);
     },
@@ -300,7 +300,7 @@ export default {
     },
   },
   watch: {
-    'order.wilayaCode'(to) {
+    "order.wilayaCode"(to) {
       this.dairas = this.wilayas.find((w) => w.id === to).dairas;
       this.order.wilaya = this.wilayas.find((w) => w.id === to).name;
       switch (to) {
@@ -325,21 +325,21 @@ export default {
   data: () => ({
     cost: 400,
     product: {
-      title: '',
+      title: "",
       price: 0,
-      imageUrl: '/logo.png',
+      imageUrl: "/logo.png",
     },
     order: {
-      adress: '',
-      wilaya: '',
-      wilayaCode: '',
-      lastName: '',
-      firstName: '',
-      num1: '',
-      num2: '',
-      city: '',
+      adress: "",
+      wilaya: "",
+      wilayaCode: "",
+      lastName: "",
+      firstName: "",
+      num1: "",
+      num2: "",
+      city: "",
     },
-    url: 'star-forger-frontend-production.up.railway.app',
+    url: "https://star-forger-frontend-production.up.railway.app",
     productId: undefined,
     qty: 1,
     wilayas: [],
@@ -349,30 +349,30 @@ export default {
     done: false,
     valid: true,
     hasError: false,
-    errorMessage: '',
-    nameRules: [(v) => !!v || '*Required'],
+    errorMessage: "",
+    nameRules: [(v) => !!v || "*Required"],
     phoneRules: [
-      (v) => !!v || '*Required',
+      (v) => !!v || "*Required",
       (v) =>
-        v.startsWith('05') ||
-        v.startsWith('06') ||
-        v.startsWith('07') ||
-        '*Phone Invalid',
-      (v) => String(v).length == 10 || '*Phone Invalid',
+        v.startsWith("05") ||
+        v.startsWith("06") ||
+        v.startsWith("07") ||
+        "*Phone Invalid",
+      (v) => String(v).length == 10 || "*Phone Invalid",
     ],
   }),
   methods: {
     async getProduct() {
-      this.productId = this.findGetParameter('id');
+      this.productId = this.findGetParameter("id");
 
-      await fetch('/result.json')
+      await fetch("/result.json")
         .then((res) => res.json())
         .then(({ wilayas }) => {
           this.wilayas = wilayas;
         });
 
       const res = await fetch(
-        this.url + '/products?productId=' + this.productId
+        this.url + "/products?productId=" + this.productId
       );
       const product = await res.json();
       this.product = product.data[0];
@@ -382,9 +382,9 @@ export default {
         tmp = [];
       location.search
         .substr(1)
-        .split('&')
-        .forEach(function (item) {
-          tmp = item.split('=');
+        .split("&")
+        .forEach(function(item) {
+          tmp = item.split("=");
           if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
         });
       return result;
@@ -419,7 +419,7 @@ export default {
       for (let i = 0; i < children.length; i++) {
         const child = children[i];
         if (child.errorBucket && child.errorBucket.length > 0) {
-          this.errorMessage = child.label + ' - ' + child.hint;
+          this.errorMessage = child.label + " - " + child.hint;
           this.hasError = true;
 
           this.dialog = true;
@@ -449,19 +449,19 @@ export default {
       };
 
       const options = {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(data),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
 
-      const res = await fetch(this.url + '/orders', options);
+      const res = await fetch(this.url + "/orders", options);
       if (res.status === 201) {
         this.done = true;
         /*eslint no-undef: 0*/
-        window.fbq('track', 'Purchase', {
-          currency: 'DZD',
+        window.fbq("track", "Purchase", {
+          currency: "DZD",
           value: res.total,
         });
       }
@@ -480,7 +480,7 @@ export default {
   },
 };
 </script>
-<style  scoped>
+<style scoped>
 .btn-font {
   font-size: 1em !important;
 }
