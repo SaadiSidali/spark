@@ -339,7 +339,7 @@ export default {
       num2: '',
       city: '',
     },
-    url: 'http://localhost:3030',
+    url: 'star-forger-frontend-production.up.railway.app',
     productId: undefined,
     qty: 1,
     wilayas: [],
